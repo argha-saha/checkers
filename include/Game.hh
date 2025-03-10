@@ -20,7 +20,7 @@ private:
     Piece* getPieceAt(int x, int y) const;
     sf::Color getTurnColor() const;
     void switchTurn();
-    void updateState();
+    void updateGameState();
     void render();
 public:
     Game();
