@@ -19,6 +19,7 @@ public:
     void getY() const;
     void isAlive() const;
     void isKing() const;
+    bool isOpponent(const Piece& other) const;
     void draw(sf::RenderWindow& window) const;
 };
 

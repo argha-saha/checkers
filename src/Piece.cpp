@@ -24,6 +24,10 @@ void Piece::isKing() const {
     return king;
 }
 
+bool Piece::isOpponent(const Piece& other) const {
+    return color != other.color;
+}
+
 void Piece::draw(sf::RenderWindow& window) const {
     // Do not draw if piece is dead
     if (!alive) {

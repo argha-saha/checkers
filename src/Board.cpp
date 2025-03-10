@@ -27,5 +27,17 @@ void Board::draw(sf::RenderWindow& window) const {
 }
 
 void Board::highlightTile(sf::RenderWindow& window, int x, int y) {
+    sf::RectangleShape tile({
+        static_cast<float>(config.tileSize),
+        static_cast<float>(config.tileSize)
+    });
 
+    // Configure tile
+    tile.setFillColor(sf::Color(128, 0, 255, 128));
+    tile.setPosition({
+        static_cast<float>(x) * config.tileSize,
+        static_cast<float>(y) * config.tileSize
+    });
+
+    window.draw(tile);
 }
