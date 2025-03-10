@@ -8,19 +8,19 @@ Piece::Piece(int x, int y, sf::Color color, const Config& cfg)
        color(color), 
        config(cfg) {}
 
-void Piece::getX() const {
+int Piece::getX() const {
     return x;
 }
 
-void Piece::getY() const {
+int Piece::getY() const {
     return y;
 }
 
-void Piece::isAlive() const {
+bool Piece::isAlive() const {
     return alive;
 }
 
-void Piece::isKing() const {
+bool Piece::isKing() const {
     return king;
 }
 
