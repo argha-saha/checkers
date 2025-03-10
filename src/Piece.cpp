@@ -3,9 +3,9 @@
 Piece::Piece(int x, int y, sf::Color color, const Config& cfg)
      : x(x), 
        y(y), 
+       color(color), 
        alive(true), 
        king(false), 
-       color(color), 
        config(cfg) {}
 
 int Piece::getX() const {
@@ -41,7 +41,7 @@ void Piece::draw(sf::RenderWindow& window) const {
     piece.setFillColor(color);
 
     // Highlight king for now
-    if (isKing) {
+    if (king) {
         piece.setOutlineThickness(config.tileSize * 0.1f);
         piece.setOutlineColor(sf::Color::Yellow);
     }
