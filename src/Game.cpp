@@ -1,4 +1,18 @@
 #include "Game.hh"
+#include "Config.hh"
+
+Game::Game() 
+    : config(Config(80, 8)),
+      window(sf::VideoMode({
+          config.tileSize * config.boardSize,
+          config.tileSize * config.boardSize
+      }), "Checkers"),
+      board(config),
+      turn(TurnColor::RED),
+      selectedPiece(nullptr)
+{
+    setupBoard();
+}
 
 Game::Game(const Config& cfg) 
     : config(cfg),
@@ -8,7 +22,7 @@ Game::Game(const Config& cfg)
       }), "Checkers"),
       board(cfg),
       turn(TurnColor::RED),
-      selectedPiece(nullptr) 
+      selectedPiece(nullptr)
 {
     setupBoard();
 }
@@ -78,4 +92,26 @@ void Game::switchTurn() {
 
 void Game::updateState() {
 
+}
+
+void Game::render() {
+    window.clear();
+    board.draw(window);
+
+    if (selectedPiece) {
+        board.highlightTile(window, selectedPiece->getX(), selectedPiece->getY());
+    }
+
+    // Draw red pieces
+    for (const auto& piece : redPieces) {
+        // TODO: Check if piece needs config argument
+        piece->draw(window);
+    }
+
+    // Draw black pieces
+    for (const auto& piece : blackPieces) {
+        piece->draw(window);
+    }
+
+    window.display();
 }
