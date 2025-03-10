@@ -33,10 +33,14 @@ void Piece::draw(sf::RenderWindow& window) const {
     // Set piece dimensions based on config
     float pieceRadius = config.tileSize * 0.4f;
     float offset = (config.tileSize - (2 * pieceRadius)) / 2.0f;
-
-    // Draw piece
     sf::CircleShape piece(pieceRadius);
     piece.setFillColor(color);
+
+    // Highlight king for now
+    if (isKing) {
+        piece.setOutlineThickness(config.tileSize * 0.1f);
+        piece.setOutlineColor(sf::Color::Yellow);
+    }
 
     piece.setPosition({
         static_cast<float>(x) * config.tileSize + offset,
