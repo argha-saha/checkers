@@ -26,8 +26,11 @@ private:
     void updateState();
     void render();
 public:
-    Game();
+    Game(const Config& cfg);
     void run();
+
+    // For Testing
+    // sf::Color getTurnColor() const;
 };
 
 #endif // GAME_HH
