@@ -9,6 +9,7 @@
 
 class Game {
 private:
+    const Config& config;
     sf::RenderWindow window;
     Board board;
     std::vector<std::unique_ptr<Piece>> redPieces;
@@ -17,10 +18,12 @@ private:
     Piece* selectedPiece;
 
     void setupBoard();
+    void processEvents();
+    void handleMouseClick();
     Piece* getPieceAt(int x, int y) const;
     sf::Color getTurnColor() const;
     void switchTurn();
-    void updateGameState();
+    void updateState();
     void render();
 public:
     Game();
