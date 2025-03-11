@@ -1,24 +1,11 @@
 #include "Game.hh"
 #include "Config.hh"
 
-Game::Game() 
-    : config(Config(80, 8)),
-      window(sf::VideoMode({
-          config.tileSize * config.boardSize,
-          config.tileSize * config.boardSize
-      }), "Checkers"),
-      board(config),
-      turn(TurnColor::RED),
-      selectedPiece(nullptr)
-{
-    setupBoard();
-}
-
 Game::Game(const Config& cfg) 
     : config(cfg),
       window(sf::VideoMode({
-          config.tileSize * config.boardSize,
-          config.tileSize * config.boardSize
+          static_cast<unsigned int>(config.tileSize * config.boardSize),
+          static_cast<unsigned int>(config.tileSize * config.boardSize)
       }), "Checkers"),
       board(cfg),
       turn(TurnColor::RED),
@@ -28,7 +15,11 @@ Game::Game(const Config& cfg)
 }
 
 void Game::run() {
-    processEvents();
+    while (window.isOpen()) {
+        processEvents();
+        updateState();
+        render();
+    }
 }
 
 void Game::setupBoard() {
@@ -37,7 +28,7 @@ void Game::setupBoard() {
         for (int j = 0; j < 8; ++j) {
             // Alternate tiles
             if ((i + j) % 2 == 0) {
-                blackPieces.push_back(std::make_unique<Piece>(j, i, sf::Color::Black));
+                blackPieces.push_back(std::make_unique<Piece>(j, i, sf::Color::Black, config));
             }
         }
     }
@@ -46,14 +37,14 @@ void Game::setupBoard() {
     for (int i = 5; i < 8; ++i) {
         for (int j = 0; j < 8; ++j) {
             if ((i + j) % 2 == 0) {
-                redPieces.push_back(std::make_unique<Piece>(j, i, sf::Color::Red));
+                redPieces.push_back(std::make_unique<Piece>(j, i, sf::Color::Red, config));
             }
         }
     }
 }
 
 void Game::processEvents() {
-    while (auto event = window.pollEvent()) {
+    while (const std::optional event = window.pollEvent()) {
         // Handle window close
         if (event->is<sf::Event::Closed>()) {
             window.close();
@@ -61,7 +52,7 @@ void Game::processEvents() {
 
         // Handle mouse click
         if (event->is<sf::Event::MouseButtonPressed>()) {
-            handleClick();
+            handleMouseClick();
         }
     }
 }
@@ -71,6 +62,18 @@ void Game::handleMouseClick() {
 }
 
 Piece* Game::getPieceAt(int x, int y) const {
+    for (const auto& piece : redPieces) {
+        if (piece->getX() == x && piece->getY() == y) {
+            return piece.get();
+        }
+    }
+
+    for (const auto& piece : blackPieces) {
+        if (piece->getX() == x && piece->getY() == y) {
+            return piece.get();
+        }
+    }
+
     return nullptr;
 }
 
@@ -104,7 +107,6 @@ void Game::render() {
 
     // Draw red pieces
     for (const auto& piece : redPieces) {
-        // TODO: Check if piece needs config argument
         piece->draw(window);
     }
 

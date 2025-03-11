@@ -9,7 +9,7 @@
 
 class Game {
 private:
-    const Config& config;
+    Config config;
     sf::RenderWindow window;
     Board board;
     std::vector<std::unique_ptr<Piece>> redPieces;
@@ -26,7 +26,6 @@ private:
     void updateState();
     void render();
 public:
-    Game();
     Game(const Config& cfg);
     void run();
 
