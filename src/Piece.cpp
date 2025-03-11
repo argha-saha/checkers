@@ -48,6 +48,26 @@ void Piece::setKing(bool _king) {
     king = _king;
 }
 
+std::pair<bool, bool> Piece::allowedMove(int toX, int toY) {
+    // Distance between current and target position
+    int dRow = std::abs(toX - x);
+    int dCol = std::abs(toY - y);
+
+    // Check if move is diagonal and 1 or 2 tiles
+    if ((dRow != dCol) || (dRow > 2 || dCol > 2)) {
+        return std::make_pair(false, false);
+    }
+
+    // If piece is not a king, check if move is forward
+    if (!king && ((color == sf::Color::Red && toY > y) || (color == sf::Color::Black && toY < y))) {
+        return std::make_pair(false, false);
+    }
+
+    bool capture = dRow == 2;
+
+    return std::make_pair(true, capture);
+}
+
 void Piece::draw(sf::RenderWindow& window) const {
     // Do not draw if piece is dead
     if (!alive) {
@@ -62,7 +82,7 @@ void Piece::draw(sf::RenderWindow& window) const {
 
     // Highlight king for now
     if (king) {
-        piece.setOutlineThickness(config.tileSize * 0.1f);
+        piece.setOutlineThickness(config.tileSize * 0.05f);
         piece.setOutlineColor(sf::Color::Yellow);
     }
 

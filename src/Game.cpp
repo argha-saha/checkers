@@ -87,18 +87,22 @@ bool Game::isValidMove(Piece* piece, int toX, int toY) {
     if (toX < 0 || toX >= config.boardSize || toY < 0 || toY >= config.boardSize) {
         return false;
     }
+
+    bool allowed = piece->allowedMove(toX, toY).first;
+    bool capture = piece->allowedMove(toX, toY).second;
+
+    // Check if move is allowed
+    if (!allowed) {
+        return false;
+    }
     
     // Tile must be unoccupied
     if (getPieceAt(toX, toY)) {
         return false;
     }
 
-    // Difference between current and target position
-    int dRow = std::abs(toX - piece->getX());
-    int dCol = std::abs(toY - piece->getY());
-
     // Non-capture move
-    if (dRow == 1 && dCol == 1) {
+    if (!capture) {
         piece->setX(toX);
         piece->setY(toY);
         switchTurnColor();
@@ -106,12 +110,13 @@ bool Game::isValidMove(Piece* piece, int toX, int toY) {
     }
 
     // Capture move
-    if (dRow == 2 && dCol == 2) {
+    if (capture) {
         int midRow = (toX + piece->getX()) / 2;
         int midCol = (toY + piece->getY()) / 2;
 
         // Check if enemy piece exists
         Piece* enemy = getPieceAt(midRow, midCol);
+
         if (enemy && piece->isOpponent(enemy)) {
             // Update position and kill enemy
             piece->setX(toX);

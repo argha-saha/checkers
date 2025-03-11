@@ -30,6 +30,12 @@ public:
     void setAlive(bool _alive);
     void setKing(bool _king);
 
+    /*
+    Returns a pair of booleans: 
+    pair.first is true if move is allowed
+    pair.second is true if it's a capture move
+    */
+    std::pair<bool, bool> allowedMove(int toX, int toY);
     void draw(sf::RenderWindow& window) const;
 };
 
