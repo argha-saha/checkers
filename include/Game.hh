@@ -21,12 +21,14 @@ private:
     void processEvents();
     Piece* getPieceAt(int x, int y) const;
     sf::Color getTurnColor() const;
+    void switchTurnColor();
     void handleMouseClick();
-    void switchTurn();
     void updateState();
     void render();
+
 public:
     Game(const Config& cfg);
+    bool isValidMove(Piece* piece, int toX, int toY);
     void run();
 
     // For Testing

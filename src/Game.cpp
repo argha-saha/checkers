@@ -59,13 +59,14 @@ void Game::processEvents() {
 
 Piece* Game::getPieceAt(int x, int y) const {
     for (const auto& piece : redPieces) {
-        if (piece->getX() == x && piece->getY() == y) {
+        // Check if piece is alive and at the correct position
+        if (piece->isAlive() && piece->getX() == x && piece->getY() == y) {
             return piece.get();
         }
     }
 
     for (const auto& piece : blackPieces) {
-        if (piece->getX() == x && piece->getY() == y) {
+        if (piece->isAlive() && piece->getX() == x && piece->getY() == y) {
             return piece.get();
         }
     }
@@ -81,6 +82,49 @@ sf::Color Game::getTurnColor() const {
     }
 }
 
+bool Game::isValidMove(Piece* piece, int toX, int toY) {
+    // Bounds check
+    if (toX < 0 || toX >= config.boardSize || toY < 0 || toY >= config.boardSize) {
+        return false;
+    }
+    
+    // Tile must be unoccupied
+    if (getPieceAt(toX, toY)) {
+        return false;
+    }
+
+    // Difference between current and target position
+    int dRow = std::abs(toX - piece->getX());
+    int dCol = std::abs(toY - piece->getY());
+
+    // Non-capture move
+    if (dRow == 1 && dCol == 1) {
+        piece->setX(toX);
+        piece->setY(toY);
+        switchTurnColor();
+        return true;
+    }
+
+    // Capture move
+    if (dRow == 2 && dCol == 2) {
+        int midRow = (toX + piece->getX()) / 2;
+        int midCol = (toY + piece->getY()) / 2;
+
+        // Check if enemy piece exists
+        Piece* enemy = getPieceAt(midRow, midCol);
+        if (enemy && piece->isOpponent(enemy)) {
+            // Update position and kill enemy
+            piece->setX(toX);
+            piece->setY(toY);
+            enemy->setAlive(false);
+            switchTurnColor();
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Game::handleMouseClick() {
     int x = sf::Mouse::getPosition(window).x / config.tileSize;
     int y = sf::Mouse::getPosition(window).y / config.tileSize;
@@ -90,13 +134,13 @@ void Game::handleMouseClick() {
         selectedPiece = clicked;
     } else if (selectedPiece) {
         // Deselect piece
-        if () {
+        if (isValidMove(selectedPiece, x, y)) {
             selectedPiece = nullptr;
         }
     }
 }
 
-void Game::switchTurn() {
+void Game::switchTurnColor() {
     if (turn == TurnColor::RED) {
         turn = TurnColor::BLACK;
     } else {
