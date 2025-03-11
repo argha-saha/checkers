@@ -15,12 +15,21 @@ private:
 
 public:
     Piece(int x, int y, sf::Color color, const Config& cfg);
+
+    // Getters
     int getX() const;
     int getY() const;
     sf::Color getColor() const;
     bool isAlive() const;
     bool isKing() const;
-    bool isOpponent(const Piece& other) const;
+    bool isOpponent(Piece* other) const;
+
+    // Setters
+    void setX(int _x);
+    void setY(int _y);
+    void setAlive(bool _alive);
+    void setKing(bool _king);
+
     void draw(sf::RenderWindow& window) const;
 };
 

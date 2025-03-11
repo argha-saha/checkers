@@ -28,8 +28,24 @@ bool Piece::isKing() const {
     return king;
 }
 
-bool Piece::isOpponent(const Piece& other) const {
-    return color != other.color;
+bool Piece::isOpponent(Piece* other) const {
+    return color != other->getColor();
+}
+
+void Piece::setX(int _x) {
+    x = _x;
+}
+
+void Piece::setY(int _y) {
+    y = _y;
+}
+
+void Piece::setAlive(bool _alive) {
+    alive = _alive;
+}
+
+void Piece::setKing(bool _king) {
+    king = _king;
 }
 
 void Piece::draw(sf::RenderWindow& window) const {
