@@ -57,10 +57,6 @@ void Game::processEvents() {
     }
 }
 
-void Game::handleMouseClick() {
-
-}
-
 Piece* Game::getPieceAt(int x, int y) const {
     for (const auto& piece : redPieces) {
         if (piece->getX() == x && piece->getY() == y) {
@@ -85,6 +81,21 @@ sf::Color Game::getTurnColor() const {
     }
 }
 
+void Game::handleMouseClick() {
+    int x = sf::Mouse::getPosition(window).x / config.tileSize;
+    int y = sf::Mouse::getPosition(window).y / config.tileSize;
+    Piece* clicked = getPieceAt(x, y);
+
+    if (clicked && clicked->getColor() == getTurnColor()) {
+        selectedPiece = clicked;
+    } else if (selectedPiece) {
+        // Deselect piece
+        if () {
+            selectedPiece = nullptr;
+        }
+    }
+}
+
 void Game::switchTurn() {
     if (turn == TurnColor::RED) {
         turn = TurnColor::BLACK;
@@ -94,7 +105,19 @@ void Game::switchTurn() {
 }
 
 void Game::updateState() {
+    for (auto& piece : redPieces) {
+        // If red piece reaches the top, upgrade to king
+        if (piece->isAlive() && piece->getY() == 0) {
+            piece->setKing(true);
+        }
+    }
 
+    for (auto& piece : blackPieces) {
+        // If black piece reaches the bottom, upgrade to king
+        if (piece->isAlive() && piece->getY() == config.boardSize - 1) {
+            piece->setKing(true);
+        }
+    }
 }
 
 void Game::render() {

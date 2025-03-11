@@ -19,9 +19,9 @@ private:
 
     void setupBoard();
     void processEvents();
-    void handleMouseClick();
     Piece* getPieceAt(int x, int y) const;
     sf::Color getTurnColor() const;
+    void handleMouseClick();
     void switchTurn();
     void updateState();
     void render();

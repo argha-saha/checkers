@@ -16,6 +16,10 @@ int Piece::getY() const {
     return y;
 }
 
+sf::Color Piece::getColor() const {
+    return color;
+}
+
 bool Piece::isAlive() const {
     return alive;
 }

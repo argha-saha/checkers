@@ -17,6 +17,7 @@ public:
     Piece(int x, int y, sf::Color color, const Config& cfg);
     int getX() const;
     int getY() const;
+    sf::Color getColor() const;
     bool isAlive() const;
     bool isKing() const;
     bool isOpponent(const Piece& other) const;
