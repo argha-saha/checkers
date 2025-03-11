@@ -1,15 +1,21 @@
 #include "Game.hh"
 #include "Config.hh"
+#include <SFML/Window/ContextSettings.hpp>
+#include <SFML/Window/WindowEnums.hpp>
 
 Game::Game(const Config& cfg) 
     : config(cfg),
       window(sf::VideoMode({
           static_cast<unsigned int>(config.tileSize * config.boardSize),
           static_cast<unsigned int>(config.tileSize * config.boardSize)
-      }), "Checkers"),
+      }), 
+      "Checkers",
+      sf::State::Windowed,
+      sf::ContextSettings{0, 0, 4}),
       board(cfg),
       turn(TurnColor::RED),
-      selectedPiece(nullptr)
+      selectedPiece(nullptr),
+      gameActive(false)
 {
     setupBoard();
 }
@@ -23,6 +29,8 @@ void Game::run() {
 }
 
 void Game::setupBoard() {
+    gameActive = true;
+
     // Setup black pieces
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 8; ++j) {
@@ -188,4 +196,13 @@ void Game::render() {
     }
 
     window.display();
+}
+
+void Game::endGame() {
+    gameActive = false;
+}
+
+void Game::restartGame() {
+    gameActive = true;
+    setupBoard();
 }

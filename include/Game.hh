@@ -16,6 +16,7 @@ private:
     std::vector<std::unique_ptr<Piece>> blackPieces;
     TurnColor turn;
     Piece* selectedPiece;
+    bool gameActive;
 
     void setupBoard();
     void processEvents();
@@ -25,6 +26,8 @@ private:
     void handleMouseClick();
     void updateState();
     void render();
+    void endGame();
+    void restartGame();
 
 public:
     Game(const Config& cfg);
