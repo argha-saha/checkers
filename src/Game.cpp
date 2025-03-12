@@ -195,6 +195,14 @@ void Game::render() {
         piece->draw(window);
     }
 
+    // Draw text over game
+    if (gameActive) {
+        sf::Text text("Checkers", font, config.tileSize * 0.5f);
+        text.setPosition(config.tileSize * 0.5f, config.tileSize * 0.5f);
+        text.setColor(sf::Color::White);
+        window.draw(text);
+    }
+
     window.display();
 }
 
