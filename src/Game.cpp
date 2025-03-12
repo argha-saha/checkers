@@ -1,7 +1,6 @@
 #include "Game.hh"
 #include "Config.hh"
-#include <SFML/Window/ContextSettings.hpp>
-#include <SFML/Window/WindowEnums.hpp>
+#include <iostream>
 
 Game::Game(const Config& cfg) 
     : config(cfg),
@@ -13,6 +12,8 @@ Game::Game(const Config& cfg)
       sf::State::Windowed,
       sf::ContextSettings{0, 0, 4}),
       board(cfg),
+      redPiecesCount(0),
+      blackPiecesCount(0),
       turn(TurnColor::RED),
       selectedPiece(nullptr),
       gameActive(false)
@@ -25,11 +26,18 @@ void Game::run() {
         processEvents();
         updateState();
         render();
+
+        if (restartPending && restartClock.getElapsedTime().asSeconds() >= 2.0f) {
+            restartGame();
+            restartPending = false;
+        }
     }
 }
 
 void Game::setupBoard() {
     gameActive = true;
+    redPiecesCount = 0;
+    blackPiecesCount = 0;
 
     // Setup black pieces
     for (int i = 0; i < 3; ++i) {
@@ -37,6 +45,7 @@ void Game::setupBoard() {
             // Alternate tiles
             if ((i + j) % 2 == 0) {
                 blackPieces.push_back(std::make_unique<Piece>(j, i, sf::Color::Black, config));
+                ++blackPiecesCount;
             }
         }
     }
@@ -46,6 +55,7 @@ void Game::setupBoard() {
         for (int j = 0; j < 8; ++j) {
             if ((i + j) % 2 == 0) {
                 redPieces.push_back(std::make_unique<Piece>(j, i, sf::Color::Red, config));
+                ++redPiecesCount;
             }
         }
     }
@@ -130,7 +140,23 @@ bool Game::isValidMove(Piece* piece, int toX, int toY) {
             piece->setX(toX);
             piece->setY(toY);
             enemy->setAlive(false);
+
+            if (enemy->getColor() == sf::Color::Red) {
+                --redPiecesCount;
+            } else {
+                --blackPiecesCount;
+            }
+
             switchTurnColor();
+
+            if (redPiecesCount == 0) {
+                winner = TurnColor::BLACK;
+                endGame();
+            } else if (blackPiecesCount == 0) {
+                winner = TurnColor::RED;
+                endGame();
+            }
+
             return true;
         }
     }
@@ -148,6 +174,8 @@ void Game::handleMouseClick() {
     } else if (selectedPiece) {
         // Deselect piece
         if (isValidMove(selectedPiece, x, y)) {
+            selectedPiece = nullptr;
+        } else {
             selectedPiece = nullptr;
         }
     }
@@ -177,6 +205,59 @@ void Game::updateState() {
     }
 }
 
+void Game::drawGameOver() {
+    sf::Vector2f rectDim(
+        (config.tileSize * config.boardSize) / 2, 
+        (config.tileSize * config.boardSize) / 2
+    );
+
+    sf::RectangleShape rect(rectDim);
+    rect.setFillColor(sf::Color::Black);
+    rect.setOutlineColor(sf::Color::White);
+    rect.setOutlineThickness(2);
+
+    sf::Vector2f center(
+        (config.tileSize * config.boardSize) / 4, 
+        (config.tileSize * config.boardSize) / 4
+    );
+
+    rect.setPosition(center);
+
+    sf::Font font("assets/Inter.ttf");
+    sf::Text text(font, "", 32);
+    text.setPosition({static_cast<float>(center.x) * 1.45f, static_cast<float>(center.y) * 1.5f});
+
+    if (winner == TurnColor::RED) {
+        text.setString("Red Wins!");
+    } else {
+        text.setString("Black Wins!");
+    }
+
+    text.setFillColor(sf::Color::White);
+
+    window.draw(rect);
+    window.draw(text);
+}
+
+void Game::endGame() {
+    gameActive = false;
+    restartClock.restart();
+    restartPending = true;
+}
+
+void Game::restartGame() {
+    // Clear pieces
+    redPieces.clear();
+    redPiecesCount = 0;
+    blackPieces.clear();
+    blackPiecesCount = 0;
+
+    // Set initial state
+    setupBoard();
+    turn = TurnColor::RED;
+    gameActive = true;
+}
+
 void Game::render() {
     window.clear();
     board.draw(window);
@@ -195,22 +276,10 @@ void Game::render() {
         piece->draw(window);
     }
 
-    // Draw text over game
-    if (gameActive) {
-        sf::Text text("Checkers", font, config.tileSize * 0.5f);
-        text.setPosition(config.tileSize * 0.5f, config.tileSize * 0.5f);
-        text.setColor(sf::Color::White);
-        window.draw(text);
+    // Draw game over screen
+    if (!gameActive) {
+        drawGameOver();
     }
 
     window.display();
-}
-
-void Game::endGame() {
-    gameActive = false;
-}
-
-void Game::restartGame() {
-    gameActive = true;
-    setupBoard();
 }

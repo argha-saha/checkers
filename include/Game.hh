@@ -2,6 +2,7 @@
 #define GAME_HH
 
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <memory>
 #include "Board.hh"
 #include "Checkers.hh"
@@ -14,9 +15,14 @@ private:
     Board board;
     std::vector<std::unique_ptr<Piece>> redPieces;
     std::vector<std::unique_ptr<Piece>> blackPieces;
+    int redPiecesCount;
+    int blackPiecesCount;
     TurnColor turn;
     Piece* selectedPiece;
     bool gameActive;
+    TurnColor winner;
+    sf::Clock restartClock;
+    bool restartPending = false;
 
     void setupBoard();
     void processEvents();
@@ -25,17 +31,15 @@ private:
     void switchTurnColor();
     void handleMouseClick();
     void updateState();
-    void render();
     void endGame();
+    void drawGameOver();
     void restartGame();
+    void render();
 
 public:
     Game(const Config& cfg);
     bool isValidMove(Piece* piece, int toX, int toY);
     void run();
-
-    // For Testing
-    // sf::Color getTurnColor() const;
 };
 
 #endif // GAME_HH

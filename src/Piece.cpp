@@ -83,7 +83,7 @@ void Piece::draw(sf::RenderWindow& window) const {
     // Highlight king for now
     if (king) {
         piece.setOutlineThickness(config.tileSize * 0.05f);
-        piece.setOutlineColor(sf::Color::Yellow);
+        piece.setOutlineColor(sf::Color(255, 200, 0));
     }
 
     piece.setPosition({
